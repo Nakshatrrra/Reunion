@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import axios from '../axiosConfig';
+import React, { useEffect, useState } from "react";
+import axios from "../axiosConfig";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState({
-    title: '',
-    startTime: '',
-    endTime: '',
-    priority: '',
-    status: 'pending',
+    title: "",
+    startTime: "",
+    endTime: "",
+    priority: "",
+    status: "pending",
   });
   const [stats, setStats] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Helper function to get auth headers
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     return { Authorization: `Bearer ${token}` };
   };
 
   // Fetch tasks
   const fetchTasks = async () => {
     try {
-      const { data } = await axios.get('/tasks', { headers: getAuthHeaders() });
+      const { data } = await axios.get("/tasks", { headers: getAuthHeaders() });
       setTasks(data.tasks);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch tasks');
+      setError(err.response?.data?.message || "Failed to fetch tasks");
     }
   };
 
@@ -35,23 +35,23 @@ const Tasks = () => {
 
     // Input validation
     if (!title || !startTime || !endTime || !priority || !status) {
-      setError('Please fill out all fields before adding a task.');
+      setError("Please fill out all fields before adding a task.");
       return;
     }
 
     try {
-      await axios.post('/tasks', newTask, { headers: getAuthHeaders() });
+      await axios.post("/tasks", newTask, { headers: getAuthHeaders() });
       setNewTask({
-        title: '',
-        startTime: '',
-        endTime: '',
-        priority: '',
-        status: 'pending',
+        title: "",
+        startTime: "",
+        endTime: "",
+        priority: "",
+        status: "pending",
       }); // Reset form fields
       fetchTasks();
       fetchTaskStats(); // Update stats
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add task');
+      setError(err.response?.data?.message || "Failed to add task");
     }
   };
 
@@ -62,24 +62,26 @@ const Tasks = () => {
       fetchTasks();
       fetchTaskStats(); // Update stats
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete task');
+      setError(err.response?.data?.message || "Failed to delete task");
     }
   };
 
   // Fetch task stats
   const fetchTaskStats = async () => {
     try {
-      const { data } = await axios.get('/tasks/stats', { headers: getAuthHeaders() });
+      const { data } = await axios.get("/tasks/stats", {
+        headers: getAuthHeaders(),
+      });
       setStats(data.stats);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch task stats');
+      setError(err.response?.data?.message || "Failed to fetch task stats");
     }
   };
 
   useEffect(() => {
     fetchTasks();
     fetchTaskStats();
-  }, []);
+  }); 
 
   return (
     <div style={styles.container}>
@@ -101,7 +103,9 @@ const Tasks = () => {
         <input
           type="datetime-local"
           value={newTask.startTime}
-          onChange={(e) => setNewTask({ ...newTask, startTime: e.target.value })}
+          onChange={(e) =>
+            setNewTask({ ...newTask, startTime: e.target.value })
+          }
           style={styles.input}
         />
         <input
@@ -140,10 +144,14 @@ const Tasks = () => {
                 <p>Priority: {task.priority}</p>
                 <p>Status: {task.status}</p>
                 <p>
-                  Start: {new Date(task.startTime).toLocaleString()} | End: {new Date(task.endTime).toLocaleString()}
+                  Start: {new Date(task.startTime).toLocaleString()} | End:{" "}
+                  {new Date(task.endTime).toLocaleString()}
                 </p>
               </div>
-              <button onClick={() => deleteTask(task.id)} style={styles.deleteButton}>
+              <button
+                onClick={() => deleteTask(task.id)}
+                style={styles.deleteButton}
+              >
                 Delete
               </button>
             </li>
@@ -166,7 +174,9 @@ const Tasks = () => {
             <p>Total Balance: {stats.pendingStats?.totalBalance.toFixed(2)}</p>
           </div>
           {stats.completedAvgTime > 0 && (
-            <p>Average Completion Time: {stats.completedAvgTime.toFixed(2)} hours</p>
+            <p>
+              Average Completion Time: {stats.completedAvgTime.toFixed(2)} hours
+            </p>
           )}
         </div>
       )}
@@ -177,52 +187,52 @@ const Tasks = () => {
 // Styling
 const styles = {
   container: {
-    padding: '20px',
-    fontFamily: 'Arial, sans-serif',
+    padding: "20px",
+    fontFamily: "Arial, sans-serif",
   },
   error: {
-    color: 'red',
+    color: "red",
   },
   formContainer: {
-    marginBottom: '20px',
+    marginBottom: "20px",
   },
   input: {
-    padding: '8px',
-    marginRight: '10px',
-    marginBottom: '10px',
-    width: '200px',
+    padding: "8px",
+    marginRight: "10px",
+    marginBottom: "10px",
+    width: "200px",
   },
   button: {
-    padding: '8px 15px',
-    cursor: 'pointer',
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
+    padding: "8px 15px",
+    cursor: "pointer",
+    backgroundColor: "#4CAF50",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
   },
   taskList: {
-    listStyleType: 'none',
+    listStyleType: "none",
     padding: 0,
   },
   taskItem: {
-    padding: '10px',
-    marginBottom: '10px',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    padding: "10px",
+    marginBottom: "10px",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   deleteButton: {
-    backgroundColor: 'red',
-    color: 'white',
-    border: 'none',
-    padding: '5px 10px',
-    cursor: 'pointer',
-    borderRadius: '5px',
+    backgroundColor: "red",
+    color: "white",
+    border: "none",
+    padding: "5px 10px",
+    cursor: "pointer",
+    borderRadius: "5px",
   },
   statsContainer: {
-    marginTop: '20px',
+    marginTop: "20px",
   },
 };
 
