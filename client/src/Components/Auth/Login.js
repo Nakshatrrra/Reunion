@@ -1,47 +1,50 @@
 import React, { useState } from 'react';
-import './Auth.css';
+import axios from 'axios';
+import './Auth.css'; // CSS for styling
 
-const LoginPage = () => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Add login logic here
-    console.log('Login:', { email, password });
+
+    try {
+      const response = await axios.post('https://reunion-fkv4.onrender.com/api/auth/login', {
+        email,
+        password,
+      });
+      setMessage(`Login successful: ${response.data.message}`);
+      localStorage.setItem('token', response.data.token); // Store token
+    } catch (error) {
+      setMessage(error.response?.data?.message || 'Login failed');
+    }
   };
 
   return (
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleLogin}>
         <h2>Login</h2>
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="auth-btn">Login</button>
-        <p className="switch-auth">
-          Don't have an account? <a href="/register">Register here</a>.
-        </p>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
+        {message && <p className="auth-message">{message}</p>}
       </form>
     </div>
   );
 };
 
-export default LoginPage;
+export default Login;

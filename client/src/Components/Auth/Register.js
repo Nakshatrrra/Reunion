@@ -1,58 +1,51 @@
 import React, { useState } from 'react';
-import './Auth.css';
+import axios from 'axios';
+import './Auth.css'; // CSS for styling
 
-const RegisterPage = () => {
-  const [name, setName] = useState('');
+const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+//   const [name, setName] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    // Add register logic here
-    console.log('Register:', { name, email, password });
+
+    try {
+      const response = await axios.post('https://reunion-fkv4.onrender.com/api/auth/register', {
+        email,
+        password,
+      });
+      setMessage(`Registration successful: ${response.data.message}`);
+    } catch (error) {
+      setMessage(error.response?.data?.message || 'Registration failed');
+    }
   };
 
   return (
     <div className="auth-container">
       <form className="auth-form" onSubmit={handleRegister}>
         <h2>Register</h2>
-        <div className="form-group">
-          <label>Name</label>
-          <input
-            type="text"
-            placeholder="Enter your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="auth-btn">Register</button>
-        <p className="switch-auth">
-          Already have an account? <a href="/login">Login here</a>.
-        </p>
+        
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Register</button>
+        {message && <p className="auth-message">{message}</p>}
       </form>
     </div>
   );
 };
 
-export default RegisterPage;
+export default Register;
